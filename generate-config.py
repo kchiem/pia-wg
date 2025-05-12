@@ -103,7 +103,7 @@ def main():
     peer = pia.connection['server_key']
     wgc.add_peer(peer, '# ' + pia.region)
     wgc.add_attr(peer, 'Endpoint', pia.connection['server_ip'] + ':1337')
-    wgc.add_attr(peer, 'AllowedIPs', '0.0.0.0/0')
+    wgc.add_attr(peer, 'AllowedIPs', '0.0.0.0/0, ::/0')
     wgc.add_attr(peer, 'PersistentKeepalive', '25')
     wgc.write_file()
 
