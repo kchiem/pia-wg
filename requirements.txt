@@ -2,7 +2,7 @@ certifi==2022.6.15
 charset-normalizer==2.0.12
 icmplib==3.0.3
 idna==3.3
-pick==1.0.0
+pick==2.4.0
 PyYAML==6.0.1
 requests==2.32.4
 requests-toolbelt==1.0.0

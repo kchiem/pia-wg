@@ -18,7 +18,7 @@ def main():
 
     # Parse arguments
     parser = argparse.ArgumentParser(description='Generate PIA wireguard config')
-    parser.add_argument('-r', '--region', dest='region', choices=["auto"]+regions, help='Allowed values are '+', '.join(regions), metavar='')
+    parser.add_argument('-r', '--region', dest='region', choices=["auto"]+regions, help='Allowed values are '+', '.join(["auto"]+regions), metavar='')
     parser.add_argument('--sort-latency', action='store_true', help='Display lowest latency regions first (requires root)')
     parser.add_argument('-f', '--config', help='Name of the generated config file')
     args = parser.parse_args()
@@ -48,7 +48,9 @@ def main():
             if region == "auto":
                 region = closest_regions[0]
             else:
-                region, index = pick(closest_regions, title, options_map_func=lambda x: "{} ({} ms)".format(x,region_latencies[x]))
+                closest_regions_with_latency=["{} ({} ms)".format(x,region_latencies[x]) for x in closest_regions]
+                _, index = pick(closest_regions_with_latency, title)
+                region = closest_regions[index]
         else:
             region, index = pick(regions, title)
     print("Selected '{}'".format(region))
