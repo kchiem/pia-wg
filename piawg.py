@@ -4,6 +4,32 @@ from requests_toolbelt.adapters import host_header_ssl
 import urllib3
 import subprocess
 import urllib.parse
+import ssl
+import warnings
+from sys import version_info
+
+
+# fix for Python 3.13 enforcing X509 strict verification, based on
+# https://stackoverflow.com/questions/79358216/python-v3-13-has-broken-email-delivery-due-to-an-ssl-change
+if version_info[0] == 3 and version_info[1] >= 13:
+    print("Attempting X509_STRICT workaround for ca.rsa.4096.crt")
+    try:
+        original_urllib3_request_context = requests.adapters._urllib3_request_context
+
+        def patched_urllib3_request_context(*args, **kwargs):
+            host_params, pool_kwargs = original_urllib3_request_context(*args, **kwargs)
+            if 'ca_certs' in pool_kwargs and pool_kwargs['ca_certs'] == 'ca.rsa.4096.crt':
+                warnings.warn("Disabling VERIFY_X509_STRICT and VERIFY_X509_PARTIAL_CHAIN")
+                context = urllib3.util.create_urllib3_context()
+                context.verify_flags = context.verify_flags & ~ssl.VERIFY_X509_STRICT
+                pool_kwargs["ssl_context"] = context
+
+            return host_params, pool_kwargs
+
+        requests.adapters._urllib3_request_context = patched_urllib3_request_context
+    except:
+        pass
+
 
 
 class piawg:
